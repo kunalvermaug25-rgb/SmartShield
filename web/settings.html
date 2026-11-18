@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SmartShield® — Settings</title>
+<link rel="stylesheet" href="https://db.onlinewebfonts.com/c/5ac3fe7c6abd2f62067f266d89671492?family=HelveticaNowDisplay-Medium">
+<link rel="stylesheet" href="https://db.onlinewebfonts.com/c/1aa3377e489837a26d019bba501e779d?family=HelveticaNowDisplayW01-Rg">
+<link rel="stylesheet" href="/assets/common.css">
+<style>
+:root{--font-heading:'HelveticaNowDisplay-Medium','Helvetica Neue',Arial,sans-serif;--font-body:'HelveticaNowDisplayW01-Rg','Helvetica Neue',Arial,sans-serif;--L:calc(var(--dock-w) + 24px)}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#fff}
+body{font-family:var(--font-body);color:#000;-webkit-font-smoothing:antialiased;overflow:hidden}
+a{color:inherit;text-decoration:none}
+button,input,select{font:inherit;color:inherit}
+
+#bgv{position:fixed;inset:0;z-index:0;width:100%;height:100%;object-fit:cover;object-position:70% center}
+
+nav.top{position:fixed;top:0;left:0;right:0;z-index:10;display:flex;justify-content:space-between;align-items:center;padding:20px 32px 20px var(--L)}
+.logo{display:flex;gap:12px;align-items:center}
+.logo b{font-family:var(--font-heading);font-weight:400;font-size:26px;letter-spacing:-.02em}
+.logo span{font-size:30px;letter-spacing:-.02em;user-select:none}
+.links{display:flex;font-size:23px}
+.links a{transition:opacity .2s;cursor:pointer}.links a:hover{opacity:.6}
+.cta{font-size:23px;text-decoration:underline;text-underline-offset:2px;cursor:pointer;transition:opacity .2s}.cta:hover{opacity:.6}
+.burger{display:none;flex-direction:column;gap:5px;background:none;border:0;cursor:pointer;padding:6px}
+.burger i{width:24px;height:2px;background:#000;transition:.3s}
+.burger.on i:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.burger.on i:nth-child(2){opacity:0}
+.burger.on i:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+.overlay{position:fixed;inset:0;z-index:9;background:rgba(255,255,255,.95);backdrop-filter:blur(4px);display:flex;flex-direction:column;justify-content:center;gap:32px;padding:0 32px;opacity:0;pointer-events:none;transition:opacity .3s}
+.overlay.on{opacity:1;pointer-events:auto}
+.overlay a{font-size:32px;font-weight:500;cursor:pointer}
+
+.hero{position:relative;z-index:1;height:100vh;display:flex;flex-direction:column;justify-content:center;padding:0 40px 0 var(--L);overflow:hidden}
+.content{max-width:36rem;position:relative;z-index:10}
+.blurlbl{pointer-events:none;user-select:none;margin-bottom:24px;font-size:clamp(18px,4vw,26px);line-height:1.3;filter:blur(4px)}
+.typed{margin-bottom:24px;font-size:clamp(18px,4vw,26px);line-height:1.35;min-height:54px}
+.cursor{display:inline-block;width:2px;height:1.1em;background:#000;vertical-align:middle;margin-left:2px;animation:blink 1s step-end infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.pills{display:flex;flex-wrap:wrap;row-gap:4px;opacity:0;transform:translateY(8px);transition:opacity .4s ease,transform .4s ease}
+.pills.on{opacity:1;transform:none}
+.pill{display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;background:#fff;color:#000;border:1px solid rgba(0,0,0,.1);border-radius:999px;font-size:15px;padding:.3em 20px;margin:0 .2em .4em;cursor:pointer;transition:background .2s,color .2s}
+.pill:hover,.pill.on{background:#000;color:#fff}
+.pill.out{color:#fff;background:rgba(0,0,0,.55);border-color:#fff;gap:12px;backdrop-filter:blur(6px)}
+.pill.out:hover{background:#fff;color:#000}
+.pill.out u{text-underline-offset:1px}
+
+/* ---------- settings panel ---------- */
+.panel{position:fixed;z-index:20;top:84px;right:24px;bottom:24px;width:min(540px,calc(100vw - 48px));border-radius:22px;padding:26px 26px 20px;
+  background:rgba(255,255,255,.72);border:1px solid rgba(255,255,255,.9);box-shadow:0 30px 80px rgba(0,0,0,.18);backdrop-filter:blur(26px) saturate(1.5);-webkit-backdrop-filter:blur(26px) saturate(1.5);
+  display:flex;flex-direction:column;transform:translateX(110%);opacity:0;transition:transform .6s cubic-bezier(.2,.9,.25,1),opacity .4s}
+.panel.on{transform:none;opacity:1}
+.ph{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.ph small{font-size:13px;opacity:.55}
+.ph h2{font-family:var(--font-heading);font-weight:400;font-size:34px;letter-spacing:-.03em;line-height:1.05;margin-top:4px}
+.x{width:36px;height:36px;border-radius:50%;border:1px solid rgba(0,0,0,.12);background:#fff;cursor:pointer;font-size:16px;flex:none}
+.x:hover{background:#000;color:#fff}
+.body{overflow:auto;margin-top:20px;padding-right:4px;flex:1}
+.sec{display:none;animation:secIn .5s cubic-bezier(.2,.8,.2,1)}
+.sec.on{display:block}
+@keyframes secIn{from{opacity:0;transform:translateY(10px)}}
+.grp{padding:16px 0;border-top:1px solid rgba(0,0,0,.08)}
+.grp:first-child{border-top:0;padding-top:0}
+.grp h4{font-family:var(--font-heading);font-weight:400;font-size:17px;margin-bottom:12px}
+.f{display:grid;gap:6px;margin-bottom:12px}
+.f label{font-size:13px;opacity:.6}
+.f input,.f select{height:44px;padding:0 16px;border-radius:999px;border:1px solid rgba(0,0,0,.12);background:#fff;outline:none;font-size:15px;transition:border .2s}
+.f input:focus,.f select:focus{border-color:#000}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+.b{height:42px;padding:0 20px;border-radius:999px;border:1px solid #000;background:#000;color:#fff;cursor:pointer;font-size:15px;transition:.2s;white-space:nowrap}
+.b:hover{background:#fff;color:#000}
+.b.alt{background:#fff;color:#000;border-color:rgba(0,0,0,.15)}
+.b.alt:hover{background:#000;color:#fff}
+.b.red{background:#d8343b;border-color:#d8343b}
+.b.red:hover{background:#fff;color:#d8343b}
+.note{font-size:13px;opacity:.6;line-height:1.45;margin-top:4px}
+.tg{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:10px 0;cursor:pointer}
+.tg div b{display:block;font-weight:400;font-size:15px}
+.tg div span{font-size:13px;opacity:.55}
+.tg input{display:none}
+.tg i{flex:none;width:46px;height:28px;border-radius:999px;background:rgba(0,0,0,.14);position:relative;transition:background .25s}
+.tg i::after{content:"";position:absolute;left:3px;top:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.2);transition:transform .3s cubic-bezier(.3,1.4,.5,1)}
+.tg input:checked+i{background:#000}
+.tg input:checked+i::after{transform:translateX(18px)}
+.av{display:flex;align-items:center;gap:16px}
+.av .img{width:76px;height:76px;border-radius:50%;background:#eee center/cover;display:grid;place-items:center;font-family:var(--font-heading);font-size:30px;cursor:pointer;position:relative;overflow:hidden;border:1px solid rgba(0,0,0,.08)}
+.av .img::after{content:"Change";position:absolute;inset:0;background:rgba(0,0,0,.5);color:#fff;font-size:12px;display:grid;place-items:center;opacity:0;transition:.2s;font-family:var(--font-body)}
+.av .img:hover::after{opacity:1}
+.range{display:flex;align-items:center;gap:14px}
+.range input[type=range]{flex:1;accent-color:#000;height:28px}
+.range b{font-family:var(--font-heading);font-weight:400;font-size:22px;min-width:76px;text-align:right}
+.about p{font-size:15px;line-height:1.55;margin-bottom:10px}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 18px;font-size:14px}
+.kv span{opacity:.55}
+
+@media (max-width:767px){
+  .links,.cta{display:none}.burger{display:flex}
+  nav.top{padding:16px 20px}
+  .hero{justify-content:flex-end;padding:0 20px 110px}
+  .pill{font-size:13px;padding:.3em 16px}
+  .panel{top:70px;right:12px;left:12px;bottom:12px;width:auto}
+  .logo b{font-size:21px}.logo span{font-size:25px}
+}
+</style>
+</head>
+<body data-page="settings">
+<video id="bgv" muted playsinline preload="auto" src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260530_042513_df96a13b-6155-4f6e-8b93-c9dee66fba08.mp4"></video>
+
+<nav class="top">
+  <div class="logo"><b>SmartShield®</b><span>✳︎</span></div>
+  <div class="links"><a data-sec="profile">Profile</a>,&nbsp;<a data-sec="device">Device</a>,&nbsp;<a data-sec="ai">Detection</a>,&nbsp;<a data-sec="limits">Alerts</a></div>
+  <a class="cta" data-logout>Log out</a>
+  <button class="burger" id="burger" aria-label="Menu"><i></i><i></i><i></i></button>
+</nav>
+<div class="overlay" id="overlay"><a data-sec="profile">Profile</a><a data-sec="device">Device</a><a data-sec="ai">Detection</a><a data-sec="limits">Alerts</a><a data-logout style="text-decoration:underline">Log out</a></div>
+
+<section class="hero">
+  <div class="content">
+    <div class="blurlbl">Hey there, meet SmartShield,<br>your road-safety control settings</div>
+    <p class="typed"><span id="typed"></span><span class="cursor" id="cursor"></span></p>
+    <div class="pills" id="pills">
+      <span class="pill" data-sec="profile">Edit my profile</span>
+      <span class="pill" data-sec="device">Connect the device</span>
+      <span class="pill" data-sec="ai">Tune detection</span>
+      <span class="pill" data-sec="limits">Set alert limits</span>
+      <span class="pill" data-sec="notify">Sounds &amp; notifications</span>
+      <span class="pill" data-sec="data">Data &amp; about</span>
+      <span class="pill out" id="emailPill">Signed in: <u id="emailTxt">…</u>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg></span>
+    </div>
+  </div>
+</section>
+
+<aside class="panel" id="panel">
+  <div class="ph"><div><small id="pKick">Settings</small><h2 id="pTitle">Profile</h2></div><button class="x" id="close" aria-label="Close">✕</button></div>
+  <div class="body">
+
+    <!-- PROFILE -->
+    <div class="sec" data-s="profile" data-t="Your profile">
+      <div class="grp">
+        <div class="av"><div class="img" id="avImg" title="Change photo"></div><div><b id="avName" style="font-family:var(--font-heading);font-weight:400;font-size:20px">–</b><div class="note" id="avMail">–</div><div class="note" id="avVia"></div></div></div>
+        <input type="file" id="avFile" accept="image/*" hidden>
+        <div class="btns" style="margin-top:12px"><button class="b alt" id="avRemove">Remove photo</button></div>
+      </div>
+      <form class="grp" id="nameForm"><h4>Name</h4><div class="f"><label>Display name</label><input id="pName" required maxlength="60"></div><button class="b">Save name</button></form>
+      <form class="grp" id="pwForm"><h4 id="pwTitle">Change password</h4>
+        <div class="f" id="curWrap"><label>Current password</label><input id="pwCur" type="password" autocomplete="current-password"></div>
+        <div class="f"><label>New password</label><input id="pwNew" type="password" autocomplete="new-password" minlength="6" required></div>
+        <button class="b">Update password</button></form>
+      <div class="grp"><h4>Session</h4><button class="b red" data-logout>Log out</button></div>
+    </div>
+
+    <!-- DEVICE -->
+    <div class="sec" data-s="device" data-t="Device & location">
+      <form class="grp" id="devForm"><h4>ESP32-CAM</h4>
+        <div class="f"><label>IP address (from Serial Monitor)</label><input id="dIp" placeholder="192.168.1.50" spellcheck="false"></div>
+        <div class="btns"><button class="b">Save</button><button type="button" class="b alt" id="dTest">Test connection</button><button type="button" class="b alt" id="dBuzz">Test buzzer</button></div>
+        <p class="note">Laptop and ESP32 must be on the same Wi-Fi or phone hotspot.</p>
+      </form>
+      <div class="grp"><label class="tg"><div><b>Demo mode</b><span>Show simulated sensor readings when no ESP32 is connected.</span></div><input type="checkbox" id="dDemo"><i></i></label></div>
+      <form class="grp" id="locForm"><h4>Pole location</h4>
+        <div class="f"><label>Location name</label><input id="lName" required></div>
+        <div class="two"><div class="f"><label>Latitude</label><input id="lLat" type="number" step="any" required></div><div class="f"><label>Longitude</label><input id="lLon" type="number" step="any" required></div></div>
+        <button class="b">Save location</button></form>
+    </div>
+
+    <!-- AI -->
+    <div class="sec" data-s="ai" data-t="Tune detection">
+      <div class="grp"><label class="tg"><div><b>AI pothole detection</b><span>Gemini checks the camera automatically.</span></div><input type="checkbox" id="aOn"><i></i></label></div>
+      <form class="grp" id="keyForm"><h4>Gemini API key</h4>
+        <div class="f"><label id="keyLbl">Paste key from aistudio.google.com/apikey</label><input id="aKey" type="password" placeholder="AIza…" autocomplete="off" spellcheck="false"></div>
+        <div class="btns"><button class="b">Save key</button><button type="button" class="b alt" id="keyClear">Remove key</button></div>
+        <p class="note">Stored only on your backend — never sent to the browser again.</p></form>
+      <form class="grp" id="aiForm"><h4>Detection</h4>
+        <div class="f"><label>Model</label><select id="aModel"><option value="gemini-3.5-flash-lite">Gemini 3.5 Flash-Lite (fastest, cheapest)</option><option value="gemini-3.6-flash">Gemini 3.6 Flash</option><option value="gemini-3.8-flash">Gemini 3.8 Flash (most capable)</option></select></div>
+        <div class="two"><div class="f"><label>Check every</label><select id="aInt"><option value="3">3 seconds</option><option value="5">5 seconds</option><option value="10">10 seconds</option><option value="20">20 seconds</option><option value="60">1 minute</option></select></div>
+        <div class="f"><label>Alert from severity</label><select id="aMin"><option value="low">Low and above</option><option value="medium">Medium and above</option><option value="high">High only</option></select></div></div>
+        <button class="b">Save detection settings</button>
+        <p class="note">Same pothole at the same location is reported once; it's re-alerted only after 24 h if still unresolved, or immediately if it was marked resolved.</p></form>
+    </div>
+
+    <!-- LIMITS -->
+    <div class="sec" data-s="limits" data-t="Alert limits">
+      <form class="grp" id="limForm"><h4>Water level limit</h4>
+        <div class="range"><input type="range" id="lim" min="1" max="50" step="0.5"><b id="limV">– cm</b></div>
+        <p class="note">When water rises above this, the ESP32 turns on the buzzer and both LEDs. Saved to the device automatically.</p>
+        <h4 style="margin-top:18px">Calibration</h4>
+        <div class="f"><label>Sensor → empty box bottom (cm)</label><input id="empty" type="number" step="0.1" min="2" max="400"></div>
+        <div class="btns"><button class="b">Save limits</button><button type="button" class="b alt" id="calib">Calibrate now (box empty)</button></div>
+        <p class="note">Water level = empty distance − measured distance. Calibrate once the pole/box is fixed and dry.</p></form>
+    </div>
+
+    <!-- NOTIFY -->
+    <div class="sec" data-s="notify" data-t="Sounds & notifications">
+      <div class="grp">
+        <label class="tg"><div><b>Alert sound</b><span>Play a chime when a pothole or flood alert arrives.</span></div><input type="checkbox" id="nSound"><i></i></label>
+        <label class="tg"><div><b>Browser notifications</b><span>Pop-up alerts even when this tab is in the background.</span></div><input type="checkbox" id="nNotif"><i></i></label>
+        <div class="btns" style="margin-top:8px"><button class="b alt" id="nTest">Play test alert</button></div>
+      </div>
+    </div>
+
+    <!-- DATA -->
+    <div class="sec" data-s="data" data-t="Data & about">
+      <div class="grp"><h4>Alert data</h4><div class="btns"><a class="b alt" href="/api/alerts/export.csv" style="display:inline-flex;align-items:center">Export CSV</a><button class="b red" id="clearAll">Clear alert history</button></div></div>
+      <div class="grp about"><h4>About SmartShield</h4>
+        <p>SmartShield is an IoT road-safety prototype: a sensor pole with an ESP32-CAM, Gemini AI pothole detection, an HC-SR04 water-level sensor, an MH-RD rain sensor and a buzzer + LED flood alarm.</p>
+        <div class="kv"><span>Team</span><b style="font-weight:400">Mohammad Q &amp; team</b><span>Course</span><b style="font-weight:400">B.Tech CSE (AI/ML)</b><span>Institute</span><b style="font-weight:400">IILM University, Gurugram</b><span>Version</span><b style="font-weight:400">1.0 prototype</b></div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<script src="/assets/common.js"></script>
+<script>
+(() => {
+const $ = (id) => document.getElementById(id);
+let cfg = {}, user = null;
+
+/* ---------- mouse-scrub background video ---------- */
+const v = $("bgv"), SENS = 0.8; let prevX = null, target = 0, seeking = false;
+function seek() { if (!v.duration) return; seeking = true; v.currentTime = target; }
+v.addEventListener("seeked", () => { seeking = false; if (Math.abs(v.currentTime - target) > 0.01) seek(); });
+addEventListener("mousemove", (e) => {
+  if (prevX === null) { prevX = e.clientX; return; }
+  const delta = e.clientX - prevX; prevX = e.clientX;
+  if (!v.duration) return;
+  target = Math.min(v.duration, Math.max(0, target + (delta / innerWidth) * SENS * v.duration));
+  if (!seeking) seek();
+});
+
+/* ---------- nav / overlay ---------- */
+$("burger").onclick = () => { $("burger").classList.toggle("on"); $("overlay").classList.toggle("on"); };
+document.querySelectorAll("[data-logout]").forEach(a => a.onclick = (e) => { e.preventDefault(); SS.logout(); });
+
+/* ---------- typewriter ---------- */
+function typewriter(text, speed = 38, startDelay = 600) {
+  const el = $("typed"); let i = 0;
+  setTimeout(() => { const t = setInterval(() => { el.textContent = text.slice(0, ++i); if (i >= text.length) { clearInterval(t); $("cursor").style.display = "none"; } }, speed); }, startDelay);
+}
+setTimeout(() => $("pills").classList.add("on"), 400);
+
+/* ---------- panel / sections ---------- */
+const panel = $("panel");
+function openSec(name) {
+  const sec = document.querySelector(`.sec[data-s="${name}"]`); if (!sec) return;
+  document.querySelectorAll(".sec").forEach(s => s.classList.toggle("on", s === sec));
+  document.querySelectorAll(".pill[data-sec]").forEach(p => p.classList.toggle("on", p.dataset.sec === name));
+  $("pTitle").textContent = sec.dataset.t; panel.classList.add("on");
+  history.replaceState(null, "", "#" + name);
+  $("burger").classList.remove("on"); $("overlay").classList.remove("on");
+}
+document.querySelectorAll("[data-sec]").forEach(el => el.addEventListener("click", (e) => { e.preventDefault(); openSec(el.dataset.sec); }));
+$("close").onclick = () => { panel.classList.remove("on"); document.querySelectorAll(".pill").forEach(p => p.classList.remove("on")); history.replaceState(null, "", location.pathname); };
+addEventListener("hashchange", () => openSec(location.hash.slice(1)));
+addEventListener("keydown", (e) => { if (e.key === "Escape") $("close").click(); });
+
+/* ---------- helpers ---------- */
+const save = async (body, msg) => { try { cfg = await SS.api("/api/settings", { method: "PATCH", body }); if (msg) SS.toast(msg); fill(); return true; } catch (e) { SS.toast("Couldn't save", e.message, "bad"); return false; } };
+function paintUser() {
+  $("emailTxt").textContent = user.email;
+  $("avName").textContent = user.name; $("avMail").textContent = user.email;
+  $("avVia").textContent = user.google ? "Signed in with Google" : "Email & password account";
+  $("pName").value = user.name;
+  const img = $("avImg");
+  img.style.backgroundImage = user.avatar ? `url("${user.avatar}")` : ""; img.textContent = user.avatar ? "" : user.name.charAt(0).toUpperCase();
+  $("curWrap").style.display = user.has_password ? "" : "none";
+  $("pwTitle").textContent = user.has_password ? "Change password" : "Set a password (optional)";
+  const dockAv = document.querySelector('.ss-dock a[data-k=profile] .ic');
+  if (dockAv) dockAv.innerHTML = user.avatar ? `<img src="${user.avatar}" alt="">` : `<span>${SS.esc(user.name.charAt(0).toUpperCase())}</span>`;
+}
+function fill() {
+  $("dIp").value = cfg.esp_ip || ""; $("dDemo").checked = !!cfg.demo_mode;
+  $("lName").value = cfg.location_name; $("lLat").value = cfg.lat; $("lLon").value = cfg.lon;
+  $("aOn").checked = !!cfg.ai_enabled; $("aModel").value = cfg.gemini_model; $("aInt").value = String(cfg.detect_interval); $("aMin").value = cfg.min_severity;
+  $("keyLbl").textContent = cfg.gemini_key_set ? `Key saved (${cfg.gemini_key_hint})${cfg.gemini_key_from_env ? " — from backend/.env" : ""}. Paste a new one to replace.` : "Paste key from aistudio.google.com/apikey";
+  $("lim").max = Math.max(5, cfg.empty_cm); $("lim").value = cfg.water_limit_cm; $("limV").textContent = `${(+cfg.water_limit_cm).toFixed(1)} cm`;
+  $("empty").value = cfg.empty_cm;
+  $("nSound").checked = !!cfg.sound; $("nNotif").checked = !!cfg.notifications && "Notification" in window && Notification.permission === "granted";
+}
+
+/* ---------- profile ---------- */
+$("avImg").onclick = () => $("avFile").click();
+$("avFile").onchange = () => {
+  const f = $("avFile").files[0]; if (!f) return;
+  const img = new Image();
+  img.onload = async () => {
+    const c = document.createElement("canvas"), s = 256; c.width = c.height = s;
+    const m = Math.min(img.width, img.height);
+    c.getContext("2d").drawImage(img, (img.width - m) / 2, (img.height - m) / 2, m, m, 0, 0, s, s);
+    try { user = await SS.api("/api/profile", { method: "PATCH", body: { avatar: c.toDataURL("image/jpeg", .85) } }); paintUser(); SS.toast("Profile photo updated"); } catch (e) { SS.toast("Upload failed", e.message, "bad"); }
+    URL.revokeObjectURL(img.src);
+  };
+  img.src = URL.createObjectURL(f); $("avFile").value = "";
+};
+$("avRemove").onclick = async () => { try { user = await SS.api("/api/profile", { method: "PATCH", body: { avatar: null } }); paintUser(); SS.toast("Photo removed"); } catch (e) { SS.toast("Couldn't remove", e.message, "bad"); } };
+$("nameForm").onsubmit = async (e) => { e.preventDefault(); try { user = await SS.api("/api/profile", { method: "PATCH", body: { name: $("pName").value } }); paintUser(); SS.toast("Name saved"); } catch (err) { SS.toast("Couldn't save", err.message, "bad"); } };
+$("pwForm").onsubmit = async (e) => { e.preventDefault(); try { await SS.api("/api/profile/password", { method: "POST", body: { current: $("pwCur").value, new: $("pwNew").value } }); $("pwCur").value = $("pwNew").value = ""; user.has_password = true; paintUser(); SS.toast("Password updated"); } catch (err) { SS.toast("Couldn't update", err.message, "bad"); } };
+$("emailPill").onclick = () => { navigator.clipboard?.writeText(user.email).then(() => SS.toast("Email copied", user.email)); };
+
+/* ---------- device ---------- */
+$("devForm").onsubmit = (e) => { e.preventDefault(); save({ esp_ip: $("dIp").value.trim() }, $("dIp").value.trim() ? "ESP32 IP saved — live mode on" : "IP cleared"); };
+$("dTest").onclick = async () => { try { const r = await SS.api("/api/device/test", { method: "POST", body: { ip: $("dIp").value.trim() } }); SS.toast("ESP32 reachable", `Replied in ${r.ms} ms · water ${r.status.water_cm ?? "?"} cm`); } catch (e) { SS.toast("Not reachable", e.message, "bad"); } };
+$("dBuzz").onclick = async () => { try { const r = await SS.api("/api/device/buzz", { method: "POST" }); SS.toast(r.demo ? "Demo mode — no device" : "Buzzer test sent", r.demo ? "Connect the ESP32 and turn demo mode off." : "It should beep for ~1 second.", r.demo ? "warn" : "ok"); } catch (e) { SS.toast("Buzzer test failed", e.message, "bad"); } };
+$("dDemo").onchange = () => save({ demo_mode: $("dDemo").checked }, $("dDemo").checked ? "Demo mode on" : "Demo mode off — using the real ESP32");
+$("locForm").onsubmit = (e) => { e.preventDefault(); save({ location_name: $("lName").value, lat: +$("lLat").value, lon: +$("lLon").value }, "Location saved"); };
+
+/* ---------- AI ---------- */
+$("aOn").onchange = () => { if ($("aOn").checked && !cfg.gemini_key_set) { $("aOn").checked = false; return SS.toast("Add a Gemini API key first", "Paste it below and press Save key.", "warn"); } save({ ai_enabled: $("aOn").checked }, $("aOn").checked ? "AI detection on" : "AI detection off"); };
+$("keyForm").onsubmit = async (e) => { e.preventDefault(); const k = $("aKey").value.trim(); if (!k) return; if (await save({ gemini_key: k }, "Gemini key saved")) $("aKey").value = ""; };
+$("keyClear").onclick = () => save({ gemini_key: "" }, "Key removed from settings");
+$("aiForm").onsubmit = (e) => { e.preventDefault(); save({ gemini_model: $("aModel").value, detect_interval: +$("aInt").value, min_severity: $("aMin").value }, "Detection settings saved"); };
+
+/* ---------- limits ---------- */
+$("lim").oninput = () => $("limV").textContent = `${(+$("lim").value).toFixed(1)} cm`;
+$("limForm").onsubmit = (e) => { e.preventDefault(); const lim = +$("lim").value, emp = +$("empty").value; if (lim >= emp) return SS.toast("Limit too high", "The limit must be lower than the empty-box distance.", "warn"); save({ water_limit_cm: lim, empty_cm: emp }, "Limits saved — sent to the ESP32"); };
+$("calib").onclick = async () => {
+  const st = await SS.api("/api/state");
+  if (st.sensors.source !== "esp" || st.sensors.distance_cm == null) return SS.toast("Connect the ESP32 first", "Calibration needs a live distance reading (demo mode off).", "warn");
+  $("empty").value = (+st.sensors.distance_cm).toFixed(1);
+  save({ empty_cm: +$("empty").value }, `Calibrated: empty = ${$("empty").value} cm`);
+};
+
+/* ---------- notifications ---------- */
+$("nSound").onchange = () => save({ sound: $("nSound").checked }, $("nSound").checked ? "Alert sound on" : "Alert sound off");
+$("nNotif").onchange = async () => {
+  if ($("nNotif").checked && "Notification" in window && Notification.permission !== "granted") {
+    const p = await Notification.requestPermission();
+    if (p !== "granted") { $("nNotif").checked = false; return SS.toast("Notifications blocked", "Allow notifications for this site in your browser.", "warn"); }
+  }
+  save({ notifications: $("nNotif").checked }, $("nNotif").checked ? "Browser notifications on" : "Browser notifications off");
+};
+$("nTest").onclick = () => { SS.beep(true); SS.toast("Pothole detected · HIGH", "This is a test alert", "bad", "🕳"); };
+
+/* ---------- data ---------- */
+$("clearAll").onclick = async () => { if (!confirm("Delete all alerts and snapshots? This can't be undone.")) return; try { await SS.api("/api/alerts", { method: "DELETE" }); SS.toast("Alert history cleared"); } catch (e) { SS.toast("Couldn't clear", e.message, "bad"); } };
+
+/* ---------- boot ---------- */
+(async () => {
+  user = await SS.ready; if (!user) return;
+  cfg = await SS.api("/api/settings");
+  paintUser(); fill();
+  const first = user.name.split(" ")[0];
+  typewriter(`Glad you're back, ${first}. Everything's running smooth. Now, what are we tweaking?`);
+  if (location.hash) setTimeout(() => openSec(location.hash.slice(1)), 500);
+})();
+})();
+</script>
+</body>
+</html>

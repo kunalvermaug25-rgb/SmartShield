@@ -1,0 +1,86 @@
+/* SmartShield — shared styles: dock, toasts, page transitions */
+:root{
+  --dock-w:96px;
+  --lime:#c6f35c; --lime2:#a9dd3a;
+}
+html{scroll-behavior:auto}
+body.ss-enter{animation:ssPageIn .7s cubic-bezier(.2,.8,.2,1) both}
+body.ss-leave{animation:ssPageOut .32s cubic-bezier(.6,0,.8,.4) both;pointer-events:none}
+@keyframes ssPageIn{from{opacity:0;filter:blur(10px);transform:scale(1.015)}to{opacity:1;filter:none;transform:none}}
+@keyframes ssPageOut{to{opacity:0;filter:blur(12px);transform:scale(.985)}}
+
+/* ---------- macOS-style dock (left, vertical) ---------- */
+.ss-dock{
+  position:fixed;left:14px;top:50%;transform:translateY(-50%);z-index:1000;
+  display:flex;flex-direction:column;align-items:center;gap:10px;
+  padding:14px 10px;border-radius:24px;
+  background:rgba(255,255,255,.16);
+  border:1px solid rgba(255,255,255,.38);
+  box-shadow:0 20px 50px rgba(10,20,15,.22),inset 0 1px 0 rgba(255,255,255,.45),inset 0 0 0 .5px rgba(255,255,255,.2);
+  backdrop-filter:blur(22px) saturate(1.7);-webkit-backdrop-filter:blur(22px) saturate(1.7);
+  animation:ssDockIn .9s cubic-bezier(.2,.9,.25,1.15) .15s both;
+}
+.ss-dock.dark{background:rgba(30,26,44,.38);border-color:rgba(255,255,255,.14);box-shadow:0 20px 50px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.12)}
+@keyframes ssDockIn{from{opacity:0;transform:translate(-40px,-50%)}to{opacity:1;transform:translate(0,-50%)}}
+.ss-dock .sep{width:34px;height:1px;background:rgba(255,255,255,.4);margin:2px 0}
+.ss-dock.dark .sep{background:rgba(255,255,255,.16)}
+.ss-dock a{
+  position:relative;display:block;width:48px;height:48px;
+  transform-origin:left center;transition:transform .18s cubic-bezier(.2,.8,.2,1),margin .18s cubic-bezier(.2,.8,.2,1);
+  text-decoration:none;
+}
+.ss-dock a .ic{
+  width:100%;height:100%;border-radius:13px;display:grid;place-items:center;color:#fff;
+  box-shadow:0 6px 14px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.45),inset 0 -2px 4px rgba(0,0,0,.12);
+}
+.ss-dock a .ic svg{width:26px;height:26px}
+.ss-dock a[data-k=intro] .ic{background:linear-gradient(160deg,#d6ff7a,#7fbf24)}
+.ss-dock a[data-k=dashboard] .ic{background:linear-gradient(160deg,#5fd3ff,#1769d6)}
+.ss-dock a[data-k=camera] .ic{background:linear-gradient(160deg,#a58bff,#4d19b1)}
+.ss-dock a[data-k=settings] .ic{background:linear-gradient(160deg,#c9ced6,#6b7380)}
+.ss-dock a[data-k=logout] .ic{background:linear-gradient(160deg,#ff9a8a,#d8343b)}
+.ss-dock a[data-k=profile] .ic{background:#fff;overflow:hidden;padding:0}
+.ss-dock a[data-k=profile] .ic img{width:100%;height:100%;object-fit:cover;border-radius:13px}
+.ss-dock a[data-k=profile] .ic span{color:#10291a;font:600 18px/1 "Inter Tight",system-ui,sans-serif}
+.ss-dock a.active::before{
+  content:"";position:absolute;left:-7px;top:50%;width:4px;height:4px;border-radius:50%;
+  background:currentColor;color:#10291a;transform:translateY(-50%);
+}
+.ss-dock.dark a.active::before{color:#fff}
+.ss-dock a .tip{
+  position:absolute;left:calc(100% + 16px);top:50%;transform:translate(-6px,-50%);white-space:nowrap;
+  padding:6px 10px;border-radius:7px;font:500 12px/1 "Inter Tight","Inter",system-ui,sans-serif;letter-spacing:.01em;
+  background:rgba(22,26,24,.78);color:#fff;opacity:0;pointer-events:none;transition:.18s;
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+}
+.ss-dock a:hover .tip{opacity:1;transform:translate(0,-50%)}
+.ss-dock a.bounce .ic{animation:ssBounce .5s cubic-bezier(.3,1.6,.5,1)}
+@keyframes ssBounce{40%{transform:translateX(10px)}}
+
+/* ---------- Toasts ---------- */
+.ss-toasts{position:fixed;right:18px;top:18px;z-index:1100;display:flex;flex-direction:column;gap:10px;width:min(360px,calc(100vw - 36px))}
+.ss-toast{
+  display:grid;grid-template-columns:34px 1fr auto;gap:12px;align-items:start;padding:13px 14px;border-radius:14px;
+  background:rgba(250,252,249,.78);border:1px solid rgba(255,255,255,.7);color:#10291a;
+  box-shadow:0 18px 40px rgba(10,30,15,.22);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);
+  font:14px/1.35 "Inter Tight","Inter",system-ui,sans-serif;animation:ssToastIn .5s cubic-bezier(.2,.9,.3,1.2) both;
+}
+.ss-toast.out{animation:ssToastOut .35s ease both}
+.ss-toast .t-ic{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;background:#10291a;color:#c6f35c;font-size:17px}
+.ss-toast.bad .t-ic{background:#d8343b;color:#fff}
+.ss-toast.warn .t-ic{background:#f2a516;color:#fff}
+.ss-toast b{display:block;font-weight:600;margin-bottom:2px}
+.ss-toast small{opacity:.7}
+.ss-toast button{all:unset;cursor:pointer;opacity:.5;font-size:16px;line-height:1}
+@keyframes ssToastIn{from{opacity:0;transform:translateX(40px) scale(.96)}}
+@keyframes ssToastOut{to{opacity:0;transform:translateX(40px)}}
+
+@media (max-width:820px){
+  :root{--dock-w:0px}
+  .ss-dock{left:50%;top:auto;bottom:12px;transform:translateX(-50%);flex-direction:row;padding:9px 10px;animation:none}
+  .ss-dock .sep{width:1px;height:30px}
+  .ss-dock a{width:42px;height:42px;transform-origin:center bottom}
+  .ss-dock a .tip{display:none}
+  .ss-dock a.active::before{left:50%;top:auto;bottom:-6px;transform:translateX(-50%)}
+}
+@media (prefers-reduced-motion:reduce){body.ss-enter,body.ss-leave,.ss-dock{animation:none}}
